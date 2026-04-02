@@ -74,7 +74,7 @@ export default function RootLayout({
           <Header/>
           
           <main className="container mx-auto max-w-5xl px-6 py-12 flex gap-10">
-            <article className="prose prose-pre:bg-transparent prose-pre:p-0 prose-slate dark:prose-invert prose-headings:font-bold prose-a:text-indigo-600 max-w-none">
+            <article className="prose prose-pre:bg-transparent prose-pre:p-0 prose-slate dark:prose-invert prose-headings:font-bold prose-a:text-indigo-600 max-w-none min-w-[370px] mx-auto">
               {children}
             </article>
             <TableOfContents />
