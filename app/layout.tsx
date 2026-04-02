@@ -34,11 +34,11 @@ export const metadata: Metadata = {
     title: "A Beginner-friendly Guide to Recording Go API Tests with Keploy",
     description:
       "Learn how to record and test APIs automatically using Keploy with a real Echo + SQL app.",
-    url: "https://your-domain.com", // update later
+    url: "https://keploy-tutorial.vercel.app/",
     siteName: "Keploy Guide",
     images: [
       {
-        url: "/og-image.png", // 👈 you will add this
+        url: "/hero.png", // 
         width: 1200,
         height: 630,
         alt: "Keploy Guide Preview",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: "Keploy Go-SQL Guide",
     description:
       "Record API calls and generate tests automatically using Keploy.",
-    images: ["/og-image.png"],
+    images: ["/hero.png"],
   },
 
   icons: {

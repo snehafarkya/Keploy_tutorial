@@ -25,7 +25,7 @@ export default function Home() {
         </h1>
 <div className="mt-8">
           <Image
-            src="/images/keploy_image.png" // 👈 add this in /public
+            src="/images/keploy_image.png" 
             alt="Keploy Demo"
             width={800}
             height={450}
@@ -55,10 +55,6 @@ export default function Home() {
             GitHub
           </Link>
         </div>
-
-        {/* Hero Image */}
-        
-
       </div>
     </main>
   );
