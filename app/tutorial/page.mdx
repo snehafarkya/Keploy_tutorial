@@ -1,0 +1,197 @@
+
+# A Beginner’s Guide to Recording Go API Tests with Keploy
+
+Most developers don't like to write mocks. The reason is simple, it's time consuming, sometimes hectic, and  notoriously fragile. Manual mocks frequently drift away from the actual behavior of your production database, meaning your tests might pass while your application fails in the real world
+
+That's where **Keploy** comes into picture!
+Have you ever worked with it? If not, that's okay. This tutorial will walk you through it.
+
+I’ll be honest.  
+The first time I heard about Keploy, I thought, “cool, another testing tool.”
+
+Then I tried writing tests for a backend API manually and quickly realized why tools like this exist.
+
+In this tutorial, we are going to build a URL shortener app called **echoApp** with echo and postgres, record and run test cases for them. But here's the catch, we will be using **Keploy** and **Docker** for it. 
+
+
+## What is Keploy (in simple words)
+
+Keploy is an API testing tool that records real API calls and converts them into test cases automatically.
+
+Instead of writing tests like:
+
+```bash title="test.js"
+func TestCreateURL(t *testing.T) {
+  // 😵 You need to mock DB
+  // 😵 Setup test server
+  // 😵 Handle dependencies
+  // 😵 Write assertions manually
+
+  // This gets complex quickly...
+}
+```
+Use Keploy, because it lets you:
+
+- Run your app
+- Hit your API like a real user
+- Record your test cases
+- Automatically generate test cases
+
+Later, it replays those requests and verifies responses.
+
+<Callout type="info"> Think of it as a **Black Box Flight Recorder** for your API 🚀 </Callout>
+## Why this is useful for Go developers
+If you've worked with Go APIs, you know:
+
+- Writing mocks is painful
+- Setting up integration tests takes time
+- Maintaining tests is harder than writing them
+
+Keploy solves this by working at the **network level**.  
+It observes traffic instead of forcing you to write test logic.
+
+## What we are going to build
+
+We'll run a simple Go URL shortener app using Keploy and Docker on Windows.
+
+And we will:
+
+- Start the app
+- Hit an API (through Postman)
+- Record test cases
+
+## Pre-requisites
+
+Before Moving ahead, make sure you have:
+
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 my-8">
+
+<ToolCard
+  title="Docker Desktop"
+  description="Install and run Docker to manage containers locally"
+  href="https://docs.docker.com/desktop/setup/install/windows-install/"
+  logo="/images/docker.svg"
+/>
+
+<ToolCard
+  title="Keploy "
+  description="Install Keploy to record and test your APIs"
+  href="https://keploy.io/docs/server/installation/"
+  logo="/images/keploylogo.png"
+/>
+
+</div>
+
+## Step 1: Clone the sample Go project
+
+Now, once setup is done, we will proceed with building our app.
+Run this simple commands in your Windows Powershell as a Administrator.
+``` 
+git clone https://github.com/keploy/samples-go.git
+cd samples-go/echo-sql
+```
+This project is a simple URL shortener built using Echo and Postgres.
+
+## Step 2: Start everything using Docker Compose
+
+This is where Echo + SQL setup becomes easy.
+```bash
+ keploy record -c "docker compose up go-app" --container-name "echoApp"
+``` 
+This will:
+
+- start Postgres
+- start the Go app
+- connect everything automatically
+- and record your test cases
+
+## Step 3: Verify the app is running
+<MDXImage src='/images/keploy_image.png' alt='keploy server image' caption='EchoApp is running and keploy is recording' />
+
+Open the Keploy port **https://localhost:8082** and check if it is running or not. If you see:
+
+``` 
+{"message":"Not Found"}
+ ```
+
+That’s expected.
+
+This app only exposes APIs, not a UI. Now we will generate a test case
+
+## Step 4: Generate Testcases
+
+You can either use Postman or CURL to generate a few test case. 
+```
+curl --request POST \
+  --url http://localhost:8082/url \
+  --header 'content-type: application/json' \
+  --data '{
+  "url": "https://github.com"
+}'
+```
+
+Write your app's working url at the place of localhost. If everything is working, you’ll get a response like this👇
+```
+{
+  "ts": 1647802058801841100,
+  "url": "http://localhost:8082/7S2cgVTN"
+}
+```
+The ts will always be unique so it will always be ignored.
+<MDXImage src='/images/postman.png' alt='Postman image' caption='Testcase running on Postman' />
+I have used Postman to run test cases here.
+
+<Callout type="warning"> You need to have Postman Desktop app in order to run it locally</Callout>
+
+And Voila🎉! You have successfully generated test cases. 
+Now it's time to run them.
+
+
+## Step 5: Stop recording
+
+After running 2-3 different API calls, you can stop Keploy:
+```
+CTRL + C
+```
+
+## Step 6: Check generated test cases
+
+Before running them, make sure that they have been recorded and stored inside your project folder:
+```
+echo-sql/keploy
+```
+You should now see test sets and inside that folder, **.yaml** files.
+
+## Step 7: Run test cases
+Type this command to run the test cases in your Powershell
+```
+keploy test -c "docker compose up" --container-name "echoApp" --build-delay 50 --delay 10
+```
+<MDXImage src='/images/test_result.png' alt='keploy test output' caption='Keploy Test Cases Run Successfully' />
+These are your recorded test cases.
+On Windows, Docker builds can be slightly slower. If your recording doesn't start immediately, don't panic! We use the --build-delay flag to give the containers time to breathe.
+
+And that's it✨! By leveraging Keploy, you’ve effectively eliminated the need for manual dependency management. There’s no need to configure "fake" Postgres instances or write brittle sqlmock suites. Keploy intercepts the data at the network layer, ensuring your application remains blissfully unaware that it’s communicating with a mock instead of a live database. 😄
+
+## **Behind the scenes(🎬)**
+
+This part matters. 
+
+Keploy:
+
+- intercepted your API calls
+- stored request and response
+- mocked external dependencies like Postgres
+- replayed everything during testing
+
+You didn't write a single test manually.
+
+<Callout type='info'> 
+Sometimes the simplest setup is the most reliable one. Keploy plays a heroic role here.
+</Callout>
+
+## **Mission Passed: Respect ++**
+
+Voila✨!You’ve successfully eliminated one of the most significant bottlenecks in the Go development lifecycle. By integrating Keploy, you’ve moved beyond the era of manual mock maintenance and into a world of automated, high-fidelity testing. Now it's your time to play with it, and build something amazing. Share it on social media, and don't forget to tag us🤩!
+
+

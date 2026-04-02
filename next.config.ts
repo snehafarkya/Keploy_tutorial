@@ -1,7 +1,18 @@
-import type { NextConfig } from "next";
+import rehypePrettyCode from "rehype-pretty-code";
+import createMDX from '@next/mdx'
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+})
+
+const nextConfig = {
+  experimental: {
+    mdxRs: true,
+  },
+  pageExtensions: ['ts', 'tsx', 'mdx'],
+}
+export const mdxOptions = {
+  rehypePlugins: [rehypePrettyCode],
 };
 
-export default nextConfig;
+export default withMDX(nextConfig)
